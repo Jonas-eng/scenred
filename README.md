@@ -7,7 +7,7 @@ The algorithms itself are described in [1].
 ## Usage
 One can use the scenario reduction starting from a 2d-numpy array, with the number of rows the length of each scenario and each column being one scenario.
 
-'''
+```
 import numpy as np
 import scenario_reduction as scen_red
 scenarios = np.random.rand(10,30)  # Create 30 random scenarios of length 10. 
@@ -19,7 +19,7 @@ S.fast_forward_sel(n_sc_red=5, num_threads = 4)  # use fast forward selection al
 scenarios_reduced = S.scenarios_reduced  # get reduced scenarios
 probabilities_reduced = S.probabilities_reduced  # get reduced probabilities
 
-'''
+```
 
 
 # References
