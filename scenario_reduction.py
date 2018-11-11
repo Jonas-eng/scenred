@@ -1,6 +1,6 @@
 import numpy as np
 import pyximport
-pyximport.install(setup_args={"include_dirs":np.get_include()}, reload_support=True, inplace=True)
+pyximport.install(setup_args={"include_dirs":np.get_include()}, inplace=True)
 from scenario_reduction_c import *
 
 
@@ -84,10 +84,9 @@ class ScenarioReduction():
     def fast_forward_sel(self, n_sc_red, num_threads=1, verbose=0):
         return self._scenario_red(fast_forward_sel_c_par, n_sc_red, num_threads, verbose)
 
-
     @staticmethod
     def calc_Kantorovich_dist(cost_matrix, probs, idx_del, idx_keep):
-        Kantorovich_dist = np.sum(probs[idx_del]*np.min(cost_matrix[idx_del,:][:,idx_keep],1))
+        Kantorovich_dist = np.sum(probs[idx_del]*np.min(cost_matrix[idx_del, :][:, idx_keep], 1))
         return Kantorovich_dist
 
     @staticmethod

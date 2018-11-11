@@ -38,7 +38,7 @@ def cost_matrix_c_par(double[::1,:] scenarios, int num_threads, str cost_func='2
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double[:,:] calc_cost_matrix_2norm(double[::1,:] scenarios, int num_threads):
+cdef double[:,:] calc_cost_matrix_2norm(double[::1,:] scenarios, int num_threads=1):
     cdef int n_sc = scenarios.shape[1]
     cdef int nt = scenarios.shape[0]
 
@@ -63,7 +63,7 @@ cdef double[:,:] calc_cost_matrix_2norm(double[::1,:] scenarios, int num_threads
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double[:,:] calc_cost_matrix_general(double[::1,:] scenarios, int r, double[:] scen0=None, int num_threads):
+cdef double[:,:] calc_cost_matrix_general(double[::1,:] scenarios, int r, double[:] scen0=None, int num_threads=1):
     cdef int n_sc = scenarios.shape[1]
     cdef int nt = scenarios.shape[0]
 
@@ -105,7 +105,7 @@ cdef double[:,:] calc_cost_matrix_general(double[::1,:] scenarios, int r, double
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double[:,:] calc_cost_matrix_1norm(double[::1,:] scenarios, int num_threads):
+cdef double[:,:] calc_cost_matrix_1norm(double[::1,:] scenarios, int num_threads=1):
     cdef int n_sc = scenarios.shape[1]
     cdef int nt = scenarios.shape[0]
 
@@ -125,6 +125,7 @@ cdef double[:,:] calc_cost_matrix_1norm(double[::1,:] scenarios, int num_threads
                     norm += scenarios[k,i] - scenarios[k,j]
                 else:
                     norm += scenarios[k,j] - scenarios[k,i]
+            norm = norm
             c[i,j] = norm
             c[j,i] = norm
     return c
@@ -132,7 +133,7 @@ cdef double[:,:] calc_cost_matrix_1norm(double[::1,:] scenarios, int num_threads
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double[:,:] calc_cost_matrix_absmax(double[::1,:] scenarios, int num_threads):
+cdef double[:,:] calc_cost_matrix_absmax(double[::1,:] scenarios, int num_threads=1):
     cdef int n_sc = scenarios.shape[1]
     cdef int nt = scenarios.shape[0]
 
@@ -174,7 +175,7 @@ def fast_forward_sel_c_par(double[::1,:] scenarios, int n_sc_red, double[:,:] c,
 
     cdef int n_sc = scenarios.shape[1]
     if probs is None:
-        cdef double [:] probs = 1 / n_sc * np.ones(n_sc)
+        probs = 1 / n_sc * np.ones(n_sc)
     cdef int n_sc_del = n_sc - n_sc_red
 
     cdef int[::1] idx_keep = np.empty(n_sc_red,dtype=np.int32)
@@ -231,11 +232,7 @@ def fast_forward_sel_c_par(double[::1,:] scenarios, int n_sc_red, double[:,:] c,
         size_idx_del -= 1
         k += 1
 
-    c_np = np.array(c)
-    c_np[np.arange(n_sc ,dtype=int) ,np.arange(n_sc ,dtype=int)] = np.nan
-    probs_red = redistribute(c_np, np.array(probs), np.array(idx_keep), np.array(idx_del[:n_sc_del]))
-
-    return np.array(idx_del[:n_sc_del]), np.array(idx_keep), np.array(probs_red)
+    return np.array(idx_del[:n_sc_del]), np.array(idx_keep)
 
 
 @cython.boundscheck(False)
@@ -276,7 +273,7 @@ def simult_backward_red_c_par(double[::1,:] scenarios, int n_sc_red, double[:,:]
 
     cdef int n_sc = scenarios.shape[1]
     if probs is None:
-        cdef double [:] probs = 1 / n_sc * np.ones(n_sc)
+        probs = 1 / n_sc * np.ones(n_sc)
     cdef int n_sc_del = n_sc - n_sc_red
 
     cdef int[::1] idx_del = np.empty(n_sc_del,dtype=np.int)
